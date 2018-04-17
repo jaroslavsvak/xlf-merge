@@ -1,4 +1,4 @@
-function merge(first, second, fileName) {
+module.exports = function(first, second, fileName) {
     function fail(message) {
         throw new Error(message + ' File name: ' + fileName + '.');
     }
@@ -48,6 +48,7 @@ function merge(first, second, fileName) {
     const srcRoot = getElement(first, transPath);
     const tgtRoot = getElement(second, transPath);
     const tgtTransUnits = [...getTransUnits(tgtRoot)];
+    let numMergedTransUnits = 0;
 
     function findTgtById(id) {
         return tgtTransUnits.find(t => t.attributes && t.attributes.id === id);
@@ -65,10 +66,10 @@ function merge(first, second, fileName) {
             }
         } else {
             tgtRoot.elements.push(srcTransUnit);
+            numMergedTransUnits++;
         }
     }
 
+    console.log(fileName, ' -> ', numMergedTransUnits, 'translations merged');
     return second;
 }
-
-exports.merge = merge;

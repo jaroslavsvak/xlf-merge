@@ -3,35 +3,38 @@
 const program = require('commander');
 const fs = require('fs');
 const convert = require('xml-js');
-const mt = require('./merge');
+const shell = require('shelljs');
+const mergeXlf = require('./merge-xlf');
+
+function runMerge(inputPaths, outputPath) {
+    const inputFiles = (function*() { yield* shell.ls(inputPaths); })();
+    const sourceFile = inputFiles.next().value;
+    
+    console.log('Initial file', sourceFile);
+    let fileContent = fs.readFileSync(sourceFile).toString();
+    let output = convert.xml2js(fileContent);
+    
+    for (let fileIter = inputFiles.next(); !fileIter.done; fileIter = inputFiles.next()) {
+        fileContent = fs.readFileSync(fileIter.value).toString();
+        output = mergeXlf(output, convert.xml2js(fileContent), fileIter.value);
+    }
+    
+    const outXml = convert.js2xml(output);
+    fs.writeFileSync(outputPath, outXml);
+    console.log('Generated output file', outputPath);
+}
+
+//runMerge(['in1.xlf', 'in2.xlf'], 'out.xlf');
+//return;
 
 program
     .version('1.0.0')
-    .option('-d, --inDir <inDir>', 'Input path (all *.xlf files in the path will be merged)')
-    .option('-o, --out <out>', 'Output file name')
+    .usage('[options] <input files or pattern such as *.xlf ...>')
+    .option('-o, --output <output>', 'Output file name')
     .parse(process.argv);
 
-if (!program.inDir || !program.out) {
+if (program.args === 0 || !program.output) {
     program.help();
 }
 
-const allFiles = fs.readdirSync(program.inDir).filter(name => name.endsWith('.xlf'));
-if (allFiles.length < 2) {
-    throw new Error('At least two input files are required. Make sure that they are in the input path ' + program.inDir + '.');
-}
-
-console.log('Reading source file', allFiles[0]);
-let fileContent = fs.readFileSync(allFiles[0]).toString();
-let output = convert.xml2js(fileContent);
-
-for (let i = 1; i < allFiles.length; i++) {
-    const fileName = allFiles[i];
-    console.log('Merging', fileName);
-
-    fileContent = fs.readFileSync(allFiles[i]).toString();
-    output = mt.merge(output, convert.xml2js(fileContent));
-}
-
-const outXml = convert.js2xml(output);
-fs.writeFileSync(program.out, outXml);
-console.log('Generated output file', program.out);
+runMerge(program.args, program.output);

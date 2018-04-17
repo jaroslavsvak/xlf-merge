@@ -11,12 +11,7 @@
   },
   "author": "Jaroslav Svak",
   "license": "MIT",
-  "keywords": [
-    "XLIFF",
-    "XLF",
-    "Merge",
-    "Tool"
-  ],
+  "keywords": ["XLIFF", "XLF", "Merge", "Tool", "Angular"],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jaroslavsvak/xlf-merge.git"
@@ -27,6 +22,7 @@
   "homepage": "https://github.com/jaroslavsvak/xlf-merge#readme",
   "dependencies": {
     "commander": "^2.15.1",
+    "shelljs": "^0.8.1",
     "xml-js": "^1.6.2"
   }
 }
