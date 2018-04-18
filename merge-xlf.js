@@ -62,6 +62,9 @@ module.exports = function(first, second, fileName) {
         if (matchingTgt) {
             const tgtContent = getContent(getElement(matchingTgt, ['target']));
             if (content !== tgtContent) {
+                console.log('trans-unit', id);
+                console.log('already present content:', content);
+                console.log('differs in file', fileName, ':', tgtContent);
                 fail('Translations mismatch at trans-unit ID: ' + id + '.');
             }
         } else {

@@ -37,4 +37,9 @@ if (program.args === 0 || !program.output) {
     program.help();
 }
 
-runMerge(program.args, program.output);
+try {
+    runMerge(program.args, program.output);
+}
+catch (err) {
+    console.error(err);
+}

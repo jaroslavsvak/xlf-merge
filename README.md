@@ -3,14 +3,14 @@ Command line tool to merge multiple XLF files into one.
 Useful for Angular compiler which requires single transation file per language.
 
 ## Installation
-```
+```bash
 npm install -g xlf-merge
 ```
 
 ## Usage
 - Accespts any number of input files (wildcards supported)
 - Requires single output file path (-o parameter)
-```
+```bash
 # Merges three input files into output.xlf
 xlf-merge input1.xlf input2.xlf input3.xlf -o output.xlf
 
@@ -24,4 +24,4 @@ xlf-merge i18n/*.fr.xlf -o all.fr.xlf
 Jaroslav Svak
 
 ## License
-Free to use, copy, and modify
+MIT
