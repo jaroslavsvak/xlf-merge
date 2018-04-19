@@ -11,12 +11,12 @@ module.exports = function(first, second, fileName) {
             breadcrumbs += '/' + pnode;
     
             if (!result.elements) {
-                fail(breadcrumbs + ' - no elements found.');
+                fail(breadcrumbs + ' - expected element ' + pnode + ' not found. Make sure that the XLF file schema is correct.');
             }
     
             result = result.elements.find(e => e.name === pnode);
             if (!result) {
-                fail('Element ' + breadcrumbs + ' not found.');
+                fail('Element ' + breadcrumbs + ' not found. Make sure that the XLF file schema is correct.');
             }
         }
     
@@ -34,7 +34,7 @@ module.exports = function(first, second, fileName) {
     
     function* getTransUnits(root) {
         if (!root.elements) {
-            fail('No elements.');
+            fail('No trans-units found.');
         }
     
         for (const el of root.elements) {
