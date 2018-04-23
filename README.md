@@ -1,7 +1,7 @@
 # xlf-merge
 Command line tool that merges any number of XLF 1.2 files.
 
-Useful for Angular apps where the NG compiler requires single translation file per language. If your translations are orginized into
+Useful for Angular apps where the NG compiler requires single translation file per language. If your translations are organized into
 many small XLF files you can run this tool to merge them before invoking Angular compilation.
 
 ## Installation
