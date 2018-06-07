@@ -24,11 +24,11 @@ function runMerge(inputPaths, outputPath) {
     console.log('Generated output file', outputPath);
 }
 
-//runMerge(['in1.xlf', 'in2.xlf'], 'out.xlf');
+//runMerge(['data/test3/generic.xlf', 'data/test3/home-page.xlf', 'data/test3/lesson.xlf'], 'data/test3/out.xlf');
 //return;
 
 program
-    .version('1.0.0')
+    .version('1.0.3')
     .usage('[options] <input files or pattern such as *.xlf ...>')
     .option('-o, --output <output>', 'Output file name')
     .parse(process.argv);

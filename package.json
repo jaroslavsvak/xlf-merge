@@ -1,6 +1,6 @@
 {
   "name": "xlf-merge",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Command-line tool for merging XLF files",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,13 @@
   },
   "author": "Jaroslav Svak",
   "license": "MIT",
-  "keywords": ["XLIFF", "XLF", "Merge", "Tool", "Angular"],
+  "keywords": [
+    "XLIFF",
+    "XLF",
+    "Merge",
+    "Tool",
+    "Angular"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jaroslavsvak/xlf-merge.git"
@@ -22,7 +28,7 @@
   "homepage": "https://github.com/jaroslavsvak/xlf-merge#readme",
   "dependencies": {
     "commander": "^2.15.1",
-    "shelljs": "^0.8.1",
-    "xml-js": "^1.6.2"
+    "shelljs": "^0.8.2",
+    "xml-js": "^1.6.4"
   }
 }

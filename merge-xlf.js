@@ -25,11 +25,7 @@ module.exports = function(first, second, fileName) {
     
     function getContent(src) {
         const result = src.elements.find(e => e.type === 'text');
-        if (!result) {
-            fail('No text content at ' + src + '.');
-        }
-    
-        return result.text;
+        return result ? result.text : '';
     }
     
     function* getTransUnits(root) {
