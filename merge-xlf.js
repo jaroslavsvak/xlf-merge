@@ -30,7 +30,8 @@ module.exports = function(first, second, fileName) {
     
     function* getTransUnits(root) {
         if (!root.elements) {
-            fail('No trans-units found.');
+            console.log('Skipping ', fileName, '- no trans-units found.');
+            return;
         }
     
         for (const el of root.elements) {
