@@ -24,7 +24,7 @@ module.exports = function(first, second, fileName) {
     }
     
     function getContent(src) {
-        const result = src.elements.find(e => e.type === 'text');
+        const result = (src.elements || []).find(e => e.type === 'text');
         return result ? result.text : '';
     }
     
