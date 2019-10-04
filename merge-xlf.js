@@ -3,7 +3,7 @@ module.exports = function(first, second, fileName) {
         throw new Error(message + ' File name: ' + fileName + '.');
     }
 
-    function getElement(src, path) {
+    function getElement(src, path, isOptional) {
         let result = src;
         let breadcrumbs = '';
     
@@ -11,12 +11,20 @@ module.exports = function(first, second, fileName) {
             breadcrumbs += '/' + pnode;
     
             if (!result.elements) {
-                fail(breadcrumbs + ' - expected element ' + pnode + ' not found. Make sure that the XLF file schema is correct.');
+                if (!isOptional) {
+                    fail(breadcrumbs + ' - expected element ' + pnode + ' not found. Make sure that the XLF file schema is correct.');
+                } else {
+                    return null;
+                }
             }
     
             result = result.elements.find(e => e.name === pnode);
             if (!result) {
-                fail('Element ' + breadcrumbs + ' not found. Make sure that the XLF file schema is correct.');
+                if (!isOptional) {
+                    fail('Element ' + breadcrumbs + ' not found. Make sure that the XLF file schema is correct.');
+                } else {
+                    return null;
+                }
             }
         }
     
@@ -24,7 +32,7 @@ module.exports = function(first, second, fileName) {
     }
     
     function getContent(src) {
-        const result = (src.elements || []).find(e => e.type === 'text');
+        const result = ((src && src.elements) || []).find(e => e.type === 'text');
         return result ? result.text : '';
     }
     
@@ -53,11 +61,11 @@ module.exports = function(first, second, fileName) {
 
     for (const srcTransUnit of getTransUnits(srcRoot)) {
         const id = srcTransUnit.attributes.id;
-        const content = getContent(getElement(srcTransUnit, ['target']));
+        const content = getContent(getElement(srcTransUnit, ['target'], true));
 
         const matchingTgt = findTgtById(id);
         if (matchingTgt) {
-            const tgtContent = getContent(getElement(matchingTgt, ['target']));
+            const tgtContent = getContent(getElement(matchingTgt, ['target'], true));
             if (content !== tgtContent) {
                 console.log('trans-unit', id);
                 console.log('already present content:', content);
