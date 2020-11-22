@@ -28,7 +28,7 @@ function runMerge(inputPaths, outputPath) {
 //return;
 
 program
-    .version('1.0.7')
+    .version('1.0.8')
     .usage('[options] <input files or pattern such as *.xlf ...>')
     .option('-o, --output <output>', 'Output file name')
     .parse(process.argv);
