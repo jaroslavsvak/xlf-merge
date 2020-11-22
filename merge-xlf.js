@@ -73,6 +73,10 @@ module.exports = function(first, second, fileName) {
                 fail('Translations mismatch at trans-unit ID: ' + id + '.');
             }
         } else {
+            if (!tgtRoot.elements) {
+                tgtRoot.elements = [];
+            }
+
             tgtRoot.elements.push(srcTransUnit);
             numMergedTransUnits++;
         }
