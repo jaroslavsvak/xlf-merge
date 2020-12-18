@@ -75,12 +75,11 @@ module.exports = function (first, second, fileName) {
     const matchingTgt = findTgtById(id);
     if (matchingTgt) {
       const tgtContent = getContent(getElement(matchingTgt, ["target"], true));
-      if (content && content !== tgtContent) {
+      if (!!content && !!tgtContent && content !== tgtContent) {
         console.log("trans-unit", id);
         console.log("already present content:", content);
         console.log("differs in file", fileName, ":", tgtContent);
         fail("Translations mismatch at trans-unit ID: " + id + ".");
-        return;
       }
     }
     if (!tgtRoot.elements) {
