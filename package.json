@@ -1,14 +1,12 @@
 {
   "name": "xlf-merge",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Command-line tool for merging XLF files",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "bin": {
-    "xlf-merge": "./index.js"
-  },
+  "bin": "./index.js",
   "author": "Jaroslav Svak",
   "license": "MIT",
   "keywords": [
