@@ -1,5 +1,5 @@
 {
-  "name": "xlf-merge",
+  "name": "@ingham-dev/xlf-merge",
   "version": "1.0.9",
   "description": "Command-line tool for merging XLF files",
   "main": "index.js",
@@ -18,12 +18,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jaroslavsvak/xlf-merge.git"
+    "url": "git+https://github.com/breningham/xlf-merge.git"
   },
   "bugs": {
-    "url": "https://github.com/jaroslavsvak/xlf-merge/issues"
+    "url": "https://github.com/breningham/xlf-merge/issues"
   },
-  "homepage": "https://github.com/jaroslavsvak/xlf-merge#readme",
+  "homepage": "https://github.com/breningham/xlf-merge#readme",
   "dependencies": {
     "commander": "^6.2.0",
     "shelljs": "^0.8.4",
