@@ -1,5 +1,5 @@
 {
-  "name": "@ingham-dev/xlf-merge",
+  "name": "@inghamdev/xlf-merge",
   "version": "1.0.9",
   "description": "Command-line tool for merging XLF files",
   "main": "index.js",
