@@ -10,13 +10,18 @@ many small XLF files you can run this tool to merge them before invoking Angular
 ## Installation
 
 ```bash
-npm install -g xlf-merge
+npm install -g @inghamdev/xlf-merge
+```
+
+```bash
+yarn global add @inghamdev/xlf-merge
 ```
 
 ## Usage
 
 - Accespts any number of input files (wildcards supported)
 - Requires single output file path (-o parameter)
+- If an input file contains a translation (and another input has the same target) they are merged across.
 
 ```bash
 # Merges three input files into output.xlf
@@ -30,7 +35,6 @@ xlf-merge i18n/*.fr.xlf -o all.fr.xlf
 
 ## Author
 
-[Jaroslav Svak](https://github.com/jaroslavsvak)  
 [Brendan Ingham](https://github.com/breningham)
 
 ## License
