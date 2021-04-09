@@ -3,65 +3,56 @@
 const process = require('process');
 const program = require('commander');
 const fs = require('fs');
-const convert = require('xml-js');
 const shell = require('shelljs');
 
 const logger = require('./logger.js');
-const mergeXlf = require('./merge-xlf');
 const xlfHandler = require('./xlf-handler');
 
-function runMerge(inputPaths, outputPath) {
-    const inputFiles = (function*() { yield* shell.ls(inputPaths); })();
-    const sourceFile = inputFiles.next().value;
-    
-    console.log('Initial file', sourceFile);
-    let fileContent = fs.readFileSync(sourceFile).toString();
-    let output = convert.xml2js(fileContent);
-    
-    for (let fileIter = inputFiles.next(); !fileIter.done; fileIter = inputFiles.next()) {
-        fileContent = fs.readFileSync(fileIter.value).toString();
-        output = mergeXlf(output, convert.xml2js(fileContent), fileIter.value);
+function parseFileContent(fileName, allItems) {
+    const fileContent = fs.readFileSync(fileName).toString();
+    let count = 0;
+
+    for (const item of xlfHandler.parse(fileContent)) {
+        const duplicate = allItems.find(t => t.id === item.id);
+        if (duplicate) {
+            if (duplicate.text === item.text) {
+                logger.warn(`Duplicate ${item.id} found in files ${fileName} and ${duplicate.fileName}`);
+            } else {
+                throw new Error(`Item ${item.id} found in files ${fileName} and ${duplicate.fileName}. Both instances contain different text.`);
+            }
+        }
+
+        allItems.push({ ...item, fileName });
+        count++;
     }
-    
-    const outXml = convert.js2xml(output);
-    fs.writeFileSync(outputPath, outXml);
-    logger.success('Generated output file ' + outputPath);
+
+    if (count) {
+        logger.info(`Parsed file ${fileName}. Found ${count} translations.`);
+    } else {
+        logger.warn(`Parsed file ${fileName}. No translations found.`);
+    }
+
+    return count;
 }
 
 function readInputs(inputPaths) {
-    const items = [];
+    const allItems = [];
 
     for (const fileName of shell.ls(inputPaths)) {
-        let count = 0;
-        const fileContent = fs.readFileSync(fileName).toString();
-
-        for (const item of xlfHandler.readFile(fileContent)) {
-            const duplicate = items.find(t => t.id === item.id);
-            if (duplicate) {
-                if (duplicate.text === item.text) {
-                    logger.warn(`Duplicate ${item.id} found in files ${fileName} and ${duplicate.fileName}`);
-                } else {
-                    throw new Error(`Item ${item.id} found in files ${fileName} and ${duplicate.fileName} with different text`);
-                }
-            }
-
-            items.push({ ...item, fileName });
-            count++;
-        }
-
-        if (count) {
-            logger.info(`Parsed file ${fileName}. found ${count} translations.`);
-        } else {
-            logger.warn(`Parsed file ${fileName}. No translations found.`);
+        try {            
+            const count = parseFileContent(fileName, allItems);
+        } catch (err) {
+            logger.error('Couldn\'t parse file ' + fileName);
+            throw err;
         }
     }
 
-    logger.info(`All input files parsed. Found ${items.length} translated items.`);
-    return items;
+    logger.info(`All input files parsed. Found ${allItems.length} translated items.`);
+    return allItems;
 }
 
 function generateOutput(transItems) {
-    return xlfHandler.writeFile(transItems);
+    return xlfHandler.save(transItems);
 }
 
 program
@@ -88,9 +79,9 @@ try {
 
         const outputPath = program.opts().output;
         fs.writeFileSync(outputPath, output);
-        logger.success('xlf-merge generated output ' + outputPath);
+        logger.success('xlf-merge generated output file ' + outputPath);
     }
 } catch (err) {
-    logger.error('xlf-merge failed to generate output\n' + err.toString());
+    logger.error('xlf-merge failed to generate output file\n' + err.toString());
     process.exitCode = 1;
 }

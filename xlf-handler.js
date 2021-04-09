@@ -37,7 +37,7 @@ function* getTransUnits(root) {
     }
 }
 
-module.exports.readFile = function*(fileContent) {
+module.exports.parse = function*(fileContent) {
     const xml = xmlJs.xml2js(fileContent);
     const root = getElement(xml, ['xliff', 'file', 'body']);
 
@@ -50,7 +50,7 @@ module.exports.readFile = function*(fileContent) {
     }
 };
 
-module.exports.writeFile = function(translatedEntries) {
+module.exports.save = function(translatedEntries) {
     const xml = {
         declaration: {
             attributes: {
