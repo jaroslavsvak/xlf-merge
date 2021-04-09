@@ -1,24 +1,40 @@
 #!/usr/bin/env node
 
 const process = require('process');
-const program = require('commander');
 const fs = require('fs');
+const path = require('path');
+
+const program = require('commander');
 const shell = require('shelljs');
 
 const logger = require('./logger.js');
 const xlfHandler = require('./xlf-handler');
+const jsonHandler = require('./json-handler');
+
+function resolveHandler(fileName) {
+    switch (path.extname(fileName.toLowerCase())) {
+        case '.json':
+            return jsonHandler;
+
+        default:
+            return xlfHandler;
+    }
+}
 
 function parseFileContent(fileName, allItems) {
+    const handler = resolveHandler(fileName);
     const fileContent = fs.readFileSync(fileName).toString();
     let count = 0;
 
-    for (const item of xlfHandler.parse(fileContent)) {
+    for (const item of handler.parse(fileContent)) {
         const duplicate = allItems.find(t => t.id === item.id);
         if (duplicate) {
             if (duplicate.text === item.text) {
                 logger.warn(`Duplicate ${item.id} found in files ${fileName} and ${duplicate.fileName}`);
             } else {
-                throw new Error(`Item ${item.id} found in files ${fileName} and ${duplicate.fileName}. Both instances contain different text.`);
+                throw new Error(
+                    `Item with ID ${item.id} found in files ${fileName} and ${duplicate.fileName}. Both instances contain different text.`
+                );
             }
         }
 
@@ -27,7 +43,7 @@ function parseFileContent(fileName, allItems) {
     }
 
     if (count) {
-        logger.info(`Parsed file ${fileName}. Found ${count} translations.`);
+        logger.info(`Parsed ${count} translations in file ${fileName}`);
     } else {
         logger.warn(`Parsed file ${fileName}. No translations found.`);
     }
@@ -39,7 +55,7 @@ function readInputs(inputPaths) {
     const allItems = [];
 
     for (const fileName of shell.ls(inputPaths)) {
-        try {            
+        try {
             const count = parseFileContent(fileName, allItems);
         } catch (err) {
             logger.error('Couldn\'t parse file ' + fileName);
@@ -49,10 +65,6 @@ function readInputs(inputPaths) {
 
     logger.info(`All input files parsed. Found ${allItems.length} translated items.`);
     return allItems;
-}
-
-function generateOutput(transItems) {
-    return xlfHandler.save(transItems);
 }
 
 program
@@ -75,9 +87,10 @@ try {
 
 try {
     if (transItems) {
-        const output = generateOutput(transItems);
-
         const outputPath = program.opts().output;
+        const handler = resolveHandler(outputPath);
+        const output = handler.save(transItems);
+
         fs.writeFileSync(outputPath, output);
         logger.success('xlf-merge generated output file ' + outputPath);
     }

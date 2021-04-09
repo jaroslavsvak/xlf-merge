@@ -91,4 +91,4 @@ module.exports.save = function(translatedEntries) {
     };
 
     return xmlJs.js2xml(xml);
-}
+};

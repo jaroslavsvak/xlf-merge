@@ -1,4 +1,6 @@
 - write more examples in help
+- better readme
+- more help into console
 - recognize json files
 - recognize xmb files
 - perform 2 phases - collecting and output
