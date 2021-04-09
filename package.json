@@ -1,6 +1,6 @@
 {
   "name": "xlf-merge",
-  "version": "1.0.8",
+  "version": "2.0.0",
   "description": "Command-line tool for merging XLF files",
   "main": "index.js",
   "scripts": {
@@ -27,8 +27,9 @@
   },
   "homepage": "https://github.com/jaroslavsvak/xlf-merge#readme",
   "dependencies": {
-    "commander": "^6.2.0",
+    "chalk": "^4.1.0",
+    "commander": "^7.2.0",
     "shelljs": "^0.8.4",
-    "xml-js": "^1.6.4"
+    "xml-js": "^1.6.11"
   }
 }

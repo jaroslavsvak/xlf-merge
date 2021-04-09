@@ -1,0 +1,8 @@
+- write more examples in help
+- recognize json files
+- recognize xmb files
+- perform 2 phases - collecting and output
+- allow outputs in xlf, xmb, and json
+- when translation conflicts, write all file paths
+- warn about duplicates, write full file paths
+- log module, colored output
