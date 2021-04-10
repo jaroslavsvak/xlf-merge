@@ -1,4 +1,5 @@
 const xmlJs = require('xml-js');
+const logger = require('./logger');
 
 function getElement(src, path) {
     let result = src;
@@ -18,11 +19,52 @@ function getElement(src, path) {
 }
 
 function convertToPlainText(src) {
+    let result = '';
     if (!src || !src.elements) {
-        return '';
+        return result;
     }
 
-    return xmlJs.js2xml(src);
+    for (const el of src.elements) {
+        switch (el.type) {
+            case 'text':
+                result += el.text;
+                break;
+            
+            case 'element':
+                if (el.name === 'x') {
+                    result += '${' + el.attributes.id + '}';
+                }
+
+                break;
+        }
+    }
+
+    const leftTrimmed = result.trimStart();
+    if (leftTrimmed.length !== result.length) {
+        result = ' ' + leftTrimmed;
+    }
+
+    const rightTrimmed = result.trimEnd();
+    if (rightTrimmed.length !== result.length) {
+        result = rightTrimmed + ' ';
+    }
+
+    return result;
+}
+
+function convertToXml(entry) {
+    if (entry.transElement) {
+        return entry.transElement;
+    }
+
+    const result = [];
+
+    let start = 0;
+    let len = entry.text.length;
+
+    result.push({ type: 'text', text: entry.text.substr(start, len) });
+
+    return result;
 }
 
 function* getTransUnits(root) {
@@ -80,7 +122,7 @@ module.exports.save = function(translatedEntries) {
                                     type: 'element',
                                     name: 'trans-unit',
                                     attributes: { id: e.id },
-                                    elements: [e.transElement]
+                                    elements: [convertToXml(e)]
                                 }))
                             }
                         ]

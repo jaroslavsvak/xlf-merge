@@ -5,9 +5,21 @@ module.exports.parse = function*(fileContent) {
         return;
     }
 
-    for (const it of Object.entries(data)) {
-        const [key, text] = it;
-        yield { id, text, transElement: null };
+    for (const it of Object.entries(data.translations)) {
+        const [id, text] = it;
+
+        const transElement = {
+            type: 'element',
+            name: 'target',
+            elements: [
+                {
+                    type: 'text',
+                    text
+                }
+            ]
+        };
+
+        yield { id, text, transElement };
     }
 };
 

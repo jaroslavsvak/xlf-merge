@@ -69,12 +69,18 @@ function readInputs(inputPaths) {
 
 program
     .version('2.0.0')
-    .usage('[options] <input files or pattern such as *.xlf ...>')
+    .usage('[options] <input files or pattern such as *.xlf, *.json ...>')
     .requiredOption('-o --output <output>', 'Output file name')
+    .option('-q --quiet', 'Quiet mode. Doesn\'t show warnings and info messages.')
     .parse(process.argv);
 
 if (program.args === 0) {
     program.help();
+}
+
+const options = program.opts();
+if (options.quiet) {
+    logger.quietMode = true;
 }
 
 let transItems = null;
@@ -87,7 +93,7 @@ try {
 
 try {
     if (transItems) {
-        const outputPath = program.opts().output;
+        const outputPath = options.output;
         const handler = resolveHandler(outputPath);
         const output = handler.save(transItems);
 

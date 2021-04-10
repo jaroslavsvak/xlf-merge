@@ -1,11 +1,16 @@
 const chalk = require('chalk');
 
 module.exports = {
+    quietMode: false,
     info: function(msg) {
-        console.log('[INFO]', msg);
+        if (!this.quietMode) {
+            console.log('[INFO]', msg);
+        }
     },
     warn: function(msg) {
-        console.log(chalk.yellow('[WARN] ' + msg));
+        if (!this.quietMode) {
+            console.log(chalk.yellow('[WARN] ' + msg));
+        }
     },
     error: function(msg) {
         console.log(chalk.bold.red('[ERR] ' + msg));
