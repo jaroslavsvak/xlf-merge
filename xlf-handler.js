@@ -54,17 +54,41 @@ function convertToPlainText(src) {
 
 function convertToXml(entry) {
     if (entry.transElement) {
-        return entry.transElement;
+        return [entry.transElement];
     }
 
-    const result = [];
+    const elements = [];
 
     let start = 0;
-    let len = entry.text.length;
 
-    result.push({ type: 'text', text: entry.text.substr(start, len) });
+    do {
+        const i = entry.text.indexOf('${', start);
+        if (i === -1) {
+            elements.push({ type: 'text', text: entry.text.substr(start) });
+            break; 
+        }
 
-    return result;
+        const endIndex = entry.text.indexOf('}', start);
+        if (endIndex === -1) {
+            throw new Error('Failed to convert text. Invalid placeholder format in:\n' + entry.text);
+        }
+
+        if (i - start > 0) {
+            elements.push({ type: 'text', text: entry.text.substring(start, i) });
+        }
+
+        elements.push({
+            type: 'element',
+            name: 'x',
+            attributes: {
+                id: entry.text.substring(i + 2, endIndex)
+            }
+        });
+
+        start = endIndex + 1;
+    } while (entry.text.length > start);
+
+    return elements;
 }
 
 function* getTransUnits(root) {
@@ -122,7 +146,7 @@ module.exports.save = function(translatedEntries) {
                                     type: 'element',
                                     name: 'trans-unit',
                                     attributes: { id: e.id },
-                                    elements: [convertToXml(e)]
+                                    elements: convertToXml(e)
                                 }))
                             }
                         ]

@@ -4,6 +4,7 @@
 - extract language and allow filtering by language
 - support arb, xliff2, xmb
 - convert among formats
+- allow conversion of multiple files instead of single output
 
 
 -------------
