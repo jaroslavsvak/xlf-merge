@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2"
+  xmlns="urn:oasis:names:tc:xliff:document:1.2"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:tc:xliff:document:1.2 xliff-core-1.2-strict.xsd">
+  <file source-language="en" target-language="de">
+    <body>
+      <trans-unit id="Interpolate">
+        <source xml:lang="en">Made with ❤</source>
+        <target xml:lang="de-AT">Testing <x id="INTERPOLATION"/> interpolation</target>
+      </trans-unit>
+
+      <trans-unit id="Link">
+        <target xml:lang="de-AT">
+          Testing link
+          <x id="START_LINK" ctype="x-a" equiv-text="&lt;a href=&quot;tst&quot;&gt;"/> Link<x id="CLOSE_LINK" ctype="x-a" equiv-text="&lt;/a&gt;"/>
+          More text
+        </target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

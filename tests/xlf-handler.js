@@ -18,7 +18,7 @@ describe('XlfHandler', () => {
     it('Parses input 2', () => {
         const units = [...xlfHandler.parse(input2)];
         assert.strictEqual(units.length, 2);
-        assert.strictEqual(units[0].text, 'Testing ${INTERPOLATION} interpolation');
+        assert.strictEqual(units[0].text, 'Testing {$INTERPOLATION} interpolation');
     });
 
     it('Converts text', () => {
@@ -31,27 +31,27 @@ describe('XlfHandler', () => {
             {
                 id: 'Interpolation',
                 transElement: null,
-                text: 'Testing ${INTERPOLATION} interpolation'
+                text: 'Testing {$INTERPOLATION} interpolation'
             },
             {
                 id: 'Link',
                 transElement: null,
-                text: 'Testing ${START_LINK}Link${CLOSE_LINK}. More text.'
+                text: 'Testing {$START_LINK}Link{$CLOSE_LINK}. More text.'
             },
             {
                 id: 'StartLink',
                 transElement: null,
-                text: '${START_LINK}Link${CLOSE_LINK}. More text.'
+                text: '{$START_LINK}Link{$CLOSE_LINK}. More text.'
             },
             {
                 id: 'EndLink',
                 transElement: null,
-                text: 'Testing ${START_LINK}Link${CLOSE_LINK}'
+                text: 'Testing {$START_LINK}Link{$CLOSE_LINK}'
             },
             {
                 id: 'MultiLink',
                 transElement: null,
-                text: 'Testing ${START_LINK}Link${CLOSE_LINK}${START_LINK}Link2${CLOSE_LINK}, more...'
+                text: 'Testing {$START_LINK}Link{$CLOSE_LINK}{$START_LINK}Link2{$CLOSE_LINK}, more...'
             }
         ];
 
@@ -66,7 +66,6 @@ describe('XlfHandler', () => {
         const units = [...jsonHandler.parse(input1), ...jsonHandler.parse(input2)];
 
         const xml = xlfHandler.save(units);
-        //console.log(xml);
         const expectedXml = fs.readFileSync('xlf-hander-save2.expected.xml', { encoding: 'utf-8' });
         assert.strictEqual(xml, expectedXml);
     });

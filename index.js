@@ -55,56 +55,90 @@ function parseFileContent(fileName, allItems) {
     return count;
 }
 
-function readInputs(inputPaths) {
-    const allItems = [];
-
+function readInputs(inputPaths, operation) {
     for (const fileName of shell.ls(inputPaths)) {
         try {
-            const count = parseFileContent(fileName, allItems);
+            operation(fileName);
         } catch (err) {
             logger.error('Couldn\'t parse file ' + fileName);
             throw err;
         }
     }
-
-    logger.info(`All input files parsed. Found ${allItems.length} translated items.`);
-    return allItems;
 }
 
-program
-    .version('2.0.0')
-    .usage('[options] <input files or pattern such as *.xlf, *.json ...>')
-    .requiredOption('-o --output <output>', 'Output file name')
-    .option('-q --quiet', 'Quiet mode. Doesn\'t show warnings and info messages.')
-    .parse(process.argv);
+function convertTranslationFiles(inputPaths, outputFormat) {
+    let counter = 0;
 
-if (program.args === 0) {
-    program.help();
+    readInputs(
+        inputPaths,
+        fileName => {
+            const transItems = [];
+            parseFileContent(fileName, transItems);
+
+            if (transItems.length) {
+                const baseName = path.basename(fileName, path.extname(fileName));
+                const newExt = '.' + outputFormat;
+                const outputPath = path.join(path.dirname(fileName), baseName + newExt);
+
+                const convertedContent = resolveHandler(outputPath).save(transItems);
+                fs.writeFileSync(outputPath, convertedContent);
+
+                logger.info(`Converted file ${fileName} into ${outputPath}`);
+            }
+        }
+    );
+
+    logger.success(`xlf-merge converted all ${counter} input files`);
 }
 
-const options = program.opts();
-if (options.quiet) {
-    logger.quietMode = true;
-}
-
-let transItems = null;
-try {
-    transItems = readInputs(program.args);
-} catch (err) {
-    logger.error('xlf-merge failed while parsing input files\n' + err.toString());
-    process.exitCode = 1;
-}
-
-try {
-    if (transItems) {
-        const outputPath = options.output;
+function mergeTranslationFiles(inputPaths, outputPath) {
+    const transItems = [];
+    readInputs(inputPaths, fileName => parseFileContent(fileName, transItems));
+    logger.info(`All input files parsed. Found ${transItems.length} translated texts.`);
+    
+    if (transItems.length) {
         const handler = resolveHandler(outputPath);
         const output = handler.save(transItems);
 
         fs.writeFileSync(outputPath, output);
         logger.success('xlf-merge generated output file ' + outputPath);
     }
+}
+
+program
+    .name('xlf-merge')
+    .version('2.0.0')
+    .addHelpText(
+        'before',
+        'Xlf-merge 2.0.0\n' +
+        'Merges and/or converts translation dictionary files. Supports XLF 1.2, JSON, and ARB.\n' +
+        'Generate single translation dictionary required by Angular compiler from multiple input files.\n'
+    )
+    .usage('[options] <input files or pattern such as *.xlf, *.json ...>')
+    .option('-o --output <output>', 'Output file name')
+    .addOption(new program.Option('-c --convert <format>', 'Converts all input files in place').choices(['xlf', 'json', 'arb']))
+    .option('-q --quiet', 'Quiet mode. Doesn\'t show warnings and info messages.')
+    .addHelpText('after', '\nEither --output or --convert option is required')
+    .parse(process.argv);
+
+const options = program.opts();
+if (program.args === 0 || (!options.output && !options.convert)) {
+    program.help();
+}
+
+if (options.quiet) {
+    logger.quietMode = true;
+}
+
+try {
+    if (options.convert) {
+        convertTranslationFiles(program.args, options.convert);
+    }
+
+    if (options.output) {
+        mergeTranslationFiles(program.args, options.output);
+    }
 } catch (err) {
-    logger.error('xlf-merge failed to generate output file\n' + err.toString());
+    logger.error('xlf-merge failed\n' + err.toString());
     process.exitCode = 1;
 }

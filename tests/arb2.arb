@@ -1,4 +1,4 @@
 {
-    "Interpolate": "Testing ${INTERPOLATION} interpolation",
-    "Link": " Testing link\n          ${START_LINK} Link${CLOSE_LINK}\n          More text "
+    "Interpolate": "Testing {$INTERPOLATION} interpolation",
+    "Link": " Testing link\n          {$START_LINK} Link{$CLOSE_LINK}\n          More text "
 }

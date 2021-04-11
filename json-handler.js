@@ -1,4 +1,4 @@
-module.exports.parse = function*(fileContent) {
+module.exports.parse = function* (fileContent) {
     const data = JSON.parse(fileContent);
 
     if (!data.translations) {
@@ -11,8 +11,9 @@ module.exports.parse = function*(fileContent) {
     }
 };
 
-module.exports.save = function(translatedEntries) {
+module.exports.save = function (translatedEntries) {
     const data = {
+        locale: '',
         translations: {}
     };
 

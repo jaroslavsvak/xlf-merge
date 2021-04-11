@@ -1,5 +1,4 @@
 const xmlJs = require('xml-js');
-const logger = require('./logger');
 
 function getElement(src, path) {
     let result = src;
@@ -32,7 +31,7 @@ function convertToPlainText(src) {
             
             case 'element':
                 if (el.name === 'x') {
-                    result += '${' + el.attributes.id + '}';
+                    result += '{$' + el.attributes.id + '}';
                 }
 
                 break;
@@ -62,7 +61,7 @@ function convertToXml(entry) {
     let start = 0;
 
     do {
-        const i = entry.text.indexOf('${', start);
+        const i = entry.text.indexOf('{$', start);
         if (i === -1) {
             elements.push({ type: 'text', text: entry.text.substr(start) });
             break; 
@@ -103,7 +102,7 @@ function* getTransUnits(root) {
     }
 }
 
-module.exports.parse = function*(fileContent) {
+module.exports.parse = function* (fileContent) {
     const xml = xmlJs.xml2js(fileContent);
     const root = getElement(xml, ['xliff', 'file', 'body']);
 
@@ -116,7 +115,7 @@ module.exports.parse = function*(fileContent) {
     }
 };
 
-module.exports.save = function(translatedEntries) {
+module.exports.save = function (translatedEntries) {
     const xml = {
         declaration: {
             attributes: {
