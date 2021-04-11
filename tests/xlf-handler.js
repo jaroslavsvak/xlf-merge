@@ -1,21 +1,21 @@
 const assert = require('assert');
 const fs = require('fs');
 
-const handler = require('../xlf-handler');
+const xlfHandler = require('../xlf-handler');
 
 describe('XlfHandler', () => {
     const input1 = fs.readFileSync('xlf1.xlf');
     const input2 = fs.readFileSync('xlf2.xlf');
 
     it('Parses input 1', () => {
-        const units = [...handler.parse(input1)];
+        const units = [...xlfHandler.parse(input1)];
         assert.strictEqual(units.length, 3);
         assert.strictEqual(units[0].text, 'Content');
         assert.strictEqual(units[2].text, ' whitespace test ');
     });
 
     it('Parses input 2', () => {
-        const units = [...handler.parse(input2)];
+        const units = [...xlfHandler.parse(input2)];
         assert.strictEqual(units.length, 2);
         assert.strictEqual(units[0].text, 'Testing ${INTERPOLATION} interpolation');
     });
@@ -54,7 +54,8 @@ describe('XlfHandler', () => {
             }
         ];
 
-        const xml = handler.save(data);
-        console.log('xml', xml);
+        const xml = xlfHandler.save(data);
+        const expectedXml = fs.readFileSync('xlf-hander-save1.expected.xml', { encoding: 'utf-8' });
+        assert.strictEqual(xml, expectedXml);
     });
 });
