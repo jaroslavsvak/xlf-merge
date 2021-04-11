@@ -2,6 +2,7 @@ const assert = require('assert');
 const fs = require('fs');
 
 const xlfHandler = require('../xlf-handler');
+const jsonHandler = require('../json-handler');
 
 describe('XlfHandler', () => {
     const input1 = fs.readFileSync('xlf1.xlf');
@@ -56,6 +57,17 @@ describe('XlfHandler', () => {
 
         const xml = xlfHandler.save(data);
         const expectedXml = fs.readFileSync('xlf-hander-save1.expected.xml', { encoding: 'utf-8' });
+        assert.strictEqual(xml, expectedXml);
+    });
+
+    it('Converts JSON', () => {
+        const input1 = fs.readFileSync('json1.json');
+        const input2 = fs.readFileSync('json2.json');
+        const units = [...jsonHandler.parse(input1), ...jsonHandler.parse(input2)];
+
+        const xml = xlfHandler.save(units);
+        //console.log(xml);
+        const expectedXml = fs.readFileSync('xlf-hander-save2.expected.xml', { encoding: 'utf-8' });
         assert.strictEqual(xml, expectedXml);
     });
 });

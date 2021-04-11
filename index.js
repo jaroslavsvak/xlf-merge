@@ -10,11 +10,15 @@ const shell = require('shelljs');
 const logger = require('./logger.js');
 const xlfHandler = require('./xlf-handler');
 const jsonHandler = require('./json-handler');
+const arbHandler = require('./arb-handler');
 
 function resolveHandler(fileName) {
     switch (path.extname(fileName.toLowerCase())) {
         case '.json':
             return jsonHandler;
+
+        case '.arb':
+            return arbHandler;
 
         default:
             return xlfHandler;

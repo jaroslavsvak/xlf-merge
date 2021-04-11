@@ -1,0 +1,5 @@
+{
+    "SimpleText": "Content",
+    "MultilineText": " Line 1\n          Line 2\n          Line 3 ",
+    "Whitespace": " whitespace test "
+}

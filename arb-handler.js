@@ -1,23 +1,19 @@
 module.exports.parse = function*(fileContent) {
     const data = JSON.parse(fileContent);
 
-    if (!data.translations) {
-        return;
-    }
-
-    for (const entry of Object.entries(data.translations)) {
+    for (const entry of Object.entries(data)) {
         const [id, text] = entry;
-        yield { id, text };
+        if (!id.startsWith('@')) {
+            yield { id, text };
+        }
     }
 };
 
 module.exports.save = function(translatedEntries) {
-    const data = {
-        translations: {}
-    };
+    const data = {};
 
     for (const entry of translatedEntries) {
-        data.translations[entry.id] = entry.text;
+        data[entry.id] = entry.text;
     }
 
     return JSON.stringify(data);
