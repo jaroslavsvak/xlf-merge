@@ -18,7 +18,7 @@ module.exports.createParser = function (fileContent) {
 
 module.exports.save = function (translatedEntries, locale) {
     const data = {
-        locale,
+        locale: locale || 'unknown',
         translations: {}
     };
 
