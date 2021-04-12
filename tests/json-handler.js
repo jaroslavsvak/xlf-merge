@@ -11,8 +11,8 @@ describe('JsonfHandler', () => {
         const input1 = fs.readFileSync('json1.json');
         const input2 = fs.readFileSync('json2.json');
 
-        const units = [...jsonHandler.parse(input1), ...jsonHandler.parse(input2)];
-        const json = jsonHandler.save(units);
+        const units = [...jsonHandler.createParser(input1).parse(), ...jsonHandler.createParser(input2).parse()];
+        const json = jsonHandler.save(units, 'de');
         assert.strictEqual(json, expectedJson);
     });
 
@@ -20,8 +20,8 @@ describe('JsonfHandler', () => {
         const input1 = fs.readFileSync('xlf1.xlf');
         const input2 = fs.readFileSync('xlf2.xlf');
 
-        const units = [...xlfHandler.parse(input1), ...xlfHandler.parse(input2)];
-        const json = jsonHandler.save(units);
+        const units = [...xlfHandler.createParser(input1).parse(), ...xlfHandler.createParser(input2).parse()];
+        const json = jsonHandler.save(units, 'de');
         assert.strictEqual(json, expectedJson);
     });
 });

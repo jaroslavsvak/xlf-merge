@@ -9,14 +9,14 @@ describe('XlfHandler', () => {
     const input2 = fs.readFileSync('xlf2.xlf');
 
     it('Parses input 1', () => {
-        const units = [...xlfHandler.parse(input1)];
+        const units = [...xlfHandler.createParser(input1).parse()];
         assert.strictEqual(units.length, 3);
         assert.strictEqual(units[0].text, 'Content');
         assert.strictEqual(units[2].text, ' whitespace test ');
     });
 
     it('Parses input 2', () => {
-        const units = [...xlfHandler.parse(input2)];
+        const units = [...xlfHandler.createParser(input2).parse()];
         assert.strictEqual(units.length, 2);
         assert.strictEqual(units[0].text, 'Testing {$INTERPOLATION} interpolation');
     });
@@ -63,7 +63,7 @@ describe('XlfHandler', () => {
     it('Converts JSON', () => {
         const input1 = fs.readFileSync('json1.json');
         const input2 = fs.readFileSync('json2.json');
-        const units = [...jsonHandler.parse(input1), ...jsonHandler.parse(input2)];
+        const units = [...jsonHandler.createParser(input1).parse(), ...jsonHandler.createParser(input2).parse()];
 
         const xml = xlfHandler.save(units);
         const expectedXml = fs.readFileSync('xlf-hander-save2.expected.xml', { encoding: 'utf-8' });

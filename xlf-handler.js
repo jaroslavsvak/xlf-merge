@@ -102,20 +102,25 @@ function* getTransUnits(root) {
     }
 }
 
-module.exports.parse = function* (fileContent) {
-    const xml = xmlJs.xml2js(fileContent);
-    const root = getElement(xml, ['xliff', 'file', 'body']);
+module.exports.createParser = function (fileContent) {
+    return {
+        getLocale: () => null,
+        parse: function* () {
+            const xml = xmlJs.xml2js(fileContent);
+            const root = getElement(xml, ['xliff', 'file', 'body']);
+        
+            for (const transUnit of getTransUnits(root)) {
+                const id = transUnit.attributes.id;
+                const transElement = getElement(transUnit, ['target']);
+                const text = convertToPlainText(transElement);
+        
+                yield { id, transElement, text };
+            }
+        }
+    };
+}
 
-    for (const transUnit of getTransUnits(root)) {
-        const id = transUnit.attributes.id;
-        const transElement = getElement(transUnit, ['target']);
-        const text = convertToPlainText(transElement);
-
-        yield { id, transElement, text };
-    }
-};
-
-module.exports.save = function (translatedEntries) {
+module.exports.save = function (translatedEntries, locale) {
     const xml = {
         declaration: {
             attributes: {

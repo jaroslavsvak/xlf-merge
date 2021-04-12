@@ -1,19 +1,24 @@
-module.exports.parse = function* (fileContent) {
+module.exports.createParser = function (fileContent) {
     const data = JSON.parse(fileContent);
 
-    if (!data.translations) {
-        return;
-    }
+    return {
+        getLocale: () => data.locale,
+        parse: function* () {
+            if (!data.translations) {
+                return;
+            }
+        
+            for (const entry of Object.entries(data.translations)) {
+                const [id, text] = entry;
+                yield { id, text };
+            }
+        }
+    };
+}
 
-    for (const entry of Object.entries(data.translations)) {
-        const [id, text] = entry;
-        yield { id, text };
-    }
-};
-
-module.exports.save = function (translatedEntries) {
+module.exports.save = function (translatedEntries, locale) {
     const data = {
-        locale: '',
+        locale,
         translations: {}
     };
 

@@ -28,9 +28,11 @@ function resolveHandler(fileName) {
 function parseFileContent(fileName, allItems) {
     const handler = resolveHandler(fileName);
     const fileContent = fs.readFileSync(fileName).toString();
+    const parser = handler.createParser(fileContent);
+
     let count = 0;
 
-    for (const item of handler.parse(fileContent)) {
+    for (const item of parser.parse(fileContent)) {
         const duplicate = allItems.find(t => t.id === item.id);
         if (duplicate) {
             if (duplicate.text === item.text) {
@@ -52,7 +54,7 @@ function parseFileContent(fileName, allItems) {
         logger.warn(`Parsed file ${fileName}. No translations found.`);
     }
 
-    return count;
+    return parser.getLocale();
 }
 
 function readInputs(inputPaths, operation) {
@@ -73,14 +75,14 @@ function convertTranslationFiles(inputPaths, outputFormat) {
         inputPaths,
         fileName => {
             const transItems = [];
-            parseFileContent(fileName, transItems);
+            const locale = parseFileContent(fileName, transItems);
 
             if (transItems.length) {
                 const baseName = path.basename(fileName, path.extname(fileName));
                 const newExt = '.' + outputFormat;
                 const outputPath = path.join(path.dirname(fileName), baseName + newExt);
 
-                const convertedContent = resolveHandler(outputPath).save(transItems);
+                const convertedContent = resolveHandler(outputPath).save(transItems, locale);
                 fs.writeFileSync(outputPath, convertedContent);
 
                 logger.info(`Converted file ${fileName} into ${outputPath}`);
@@ -93,12 +95,22 @@ function convertTranslationFiles(inputPaths, outputFormat) {
 
 function mergeTranslationFiles(inputPaths, outputPath) {
     const transItems = [];
-    readInputs(inputPaths, fileName => parseFileContent(fileName, transItems));
+    let locale = null;
+
+    readInputs(inputPaths, fileName => {
+        let fileLocale = parseFileContent(fileName, transItems);
+        if (locale && fileLocale && locale !== fileLocale) {
+            throw new Error(`Locales among input file don't match. File ${fileName} has locale ${fileLocale}, expected ${locale}.`);
+        }
+
+        locale = fileLocale;
+    });
+
     logger.info(`All input files parsed. Found ${transItems.length} translated texts.`);
     
     if (transItems.length) {
         const handler = resolveHandler(outputPath);
-        const output = handler.save(transItems);
+        const output = handler.save(transItems, locale);
 
         fs.writeFileSync(outputPath, output);
         logger.success('xlf-merge generated output file ' + outputPath);

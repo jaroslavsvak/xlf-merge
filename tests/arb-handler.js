@@ -11,8 +11,8 @@ describe('ArbHandler', () => {
         const input1 = fs.readFileSync('arb1.arb');
         const input2 = fs.readFileSync('arb2.arb');
 
-        const units = [...arbHandler.parse(input1), ...arbHandler.parse(input2)];
-        const json = arbHandler.save(units);
+        const units = [...arbHandler.createParser(input1).parse(), ...arbHandler.createParser(input2).parse()];
+        const json = arbHandler.save(units, 'de');
         assert.strictEqual(json, expectedArb);
     });
 
@@ -20,8 +20,8 @@ describe('ArbHandler', () => {
         const input1 = fs.readFileSync('xlf1.xlf');
         const input2 = fs.readFileSync('xlf2.xlf');
 
-        const units = [...xlfHandler.parse(input1), ...xlfHandler.parse(input2)];
-        const json = arbHandler.save(units);
+        const units = [...xlfHandler.createParser(input1).parse(), ...xlfHandler.createParser(input2).parse()];
+        const json = arbHandler.save(units, 'de');
         assert.strictEqual(json, expectedArb);
     });
 });
