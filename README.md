@@ -2,16 +2,21 @@
 Command line tool that merges any number of XLF 1.2 files, JSON text dictionaries, and ARB text dictionaries.
 Input and output is tested and compatible with Angular v10 and v11 compiler.
 
-Designer for (but not limite to) Angular application. The NG compiler requires single dictionay per language. If your translations are organized into
-many small files, you can run this tool to merge them before invoking Angular compilation.
+Designer for (but not limite to) Angular-based applications to simplify their i18n.
+The NG compiler requires a single dictionay file per language. If your translations are organized into
+many small files, you can run this tool to merge them before invoking the Angular compilation.
 
 ## Installation
 ```bash
+# Install globally (run by xlf-merge <parameters>)
+npm install xlf-merge -g
+
+# Install locally as development tool (run by node ./node_modules/xlf-merge <parameters>)
 npm install xlf-merge --save-dev
 ```
 
 ## Usage
-- Accespts any number of input files (wildcards supported)
+- Accepts any number of input files (wildcards supported)
 - File format is detected by file extension
     - *.json - file treated as JSON text dictionary
     - *.abr - file treated as ARB text dictionary
@@ -26,21 +31,30 @@ xlf-merge i18n/*.en.xlf -o all.en.xlf
 xlf-merge i18n/*.de.xlf -o all.de.xlf
 xlf-merge i18n/*.fr.xlf -o all.fr.xlf
 
-# Merges also files in subdirectories
+# Merges *.de.xlf files recursively in subdirectories
 xlf-merge i18n/**/*.de.xlf -o all.de.xlf
 
-# Merge all XLF files and JSON files, output in JSON format
-xlf-merge i18n/**/*.de.xlf i18n/**/*.de.json -o all.de.json
+# Merges all XLF and JSON files with pattern *.de.xlf and *.de.json. Merged file has JSON format.
+xlf-merge i18n/**/*.de.xlf i18n/**/*.de.json --output all.de.json
 ```
 - Supply the --convert <format> parameter to convert all found files
     - Each converted file is saved in the same path as its source file
-    - Conversion is allowed with or without the --output parameter (which also merges all input files if supplied)
+    - Conversion is allowed with or without the --output parameter (which also merges all input files)
+```bash
+# Converts all XLF files into JSON format
+xlf-merge *.xlf --convert json
+
+# Recursively converts all XLF files into ARB format
+xlf-merge **/*.xlf --convert arb
+```
 
 ## Example setp
-Supposing xlf files are in src/i18n and its subdirectories.
-Add xlf-merge before production build of Angular application.
-Modify npm scripts to automate the build task, for example:
-```
+Supposing XLF files are in path src/i18n/...
+German translations have pattern *.de.xlf, Swedish translations have pattern *.sv.xlf.
+- Install Xlf-merge locally by running "npm install --save-dev xlf-merge"
+- Run xlf-merge before production build of Angular application
+- Write npm scripts to automate the entire build task, for example:
+```json
 "scripts": {
     "merge-de": "node ./node_modules/xlf-merge src/i18n/**/*.de.xlf",
     "merge-sv": "node ./node_modules/xlf-merge src/i18n/**/*.sv.xlf",
