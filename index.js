@@ -25,7 +25,7 @@ function resolveHandler(fileName) {
     }
 }
 
-function parseFileContent(fileName, allItems) {
+function parseFileContent(fileName, allItems, allowConflicts) {
     const handler = resolveHandler(fileName);
     const fileContent = fs.readFileSync(fileName).toString();
     const parser = handler.createParser(fileContent);
@@ -37,10 +37,14 @@ function parseFileContent(fileName, allItems) {
         if (duplicate) {
             if (duplicate.text === item.text) {
                 logger.warn(`Duplicate ${item.id} found in files ${fileName} and ${duplicate.fileName}`);
+                continue;
             } else {
-                throw new Error(
-                    `Item with ID ${item.id} found in files ${fileName} and ${duplicate.fileName}. Both instances contain different text.`
-                );
+                const errMsg = `Item with ID ${item.id} found in files ${fileName} and ${duplicate.fileName}. Both instances contain different text.`;
+                if (allowConflicts) {
+                    logger.warn(errMsg);
+                } else {
+                    throw new Error(errMsg);
+                }
             }
         }
 
@@ -68,14 +72,14 @@ function readInputs(inputPaths, operation) {
     }
 }
 
-function convertTranslationFiles(inputPaths, outputFormat) {
+function convertTranslationFiles(inputPaths, outputFormat, allowConflicts) {
     let counter = 0;
 
     readInputs(
         inputPaths,
         fileName => {
             const transItems = [];
-            const locale = parseFileContent(fileName, transItems);
+            const locale = parseFileContent(fileName, transItems, allowConflicts);
 
             if (transItems.length) {
                 const baseName = path.basename(fileName, path.extname(fileName));
@@ -93,12 +97,12 @@ function convertTranslationFiles(inputPaths, outputFormat) {
     logger.success(`xlf-merge converted all ${counter} input files`);
 }
 
-function mergeTranslationFiles(inputPaths, outputPath) {
+function mergeTranslationFiles(inputPaths, outputPath, allowConflicts) {
     const transItems = [];
     let locale = null;
 
     readInputs(inputPaths, fileName => {
-        let fileLocale = parseFileContent(fileName, transItems);
+        let fileLocale = parseFileContent(fileName, transItems, allowConflicts);
         if (locale && fileLocale && locale !== fileLocale) {
             throw new Error(`Locales among input file don't match. File ${fileName} has locale ${fileLocale}, expected ${locale}.`);
         }
@@ -119,17 +123,18 @@ function mergeTranslationFiles(inputPaths, outputPath) {
 
 program
     .name('xlf-merge')
-    .version('2.0.0')
+    .version('2.0.1')
     .addHelpText(
         'before',
-        'Xlf-merge 2.0.0\n' +
+        'Xlf-merge 2.0.1\n' +
         'Merges and/or converts translation dictionary files. Supports XLF 1.2, JSON, and ARB.\n' +
-        'Generate single translation dictionary required by Angular compiler from multiple input files.\n'
+        'Generates single translation dictionary required by Angular compiler from multiple input files.\n'
     )
     .usage('[options] <input files or pattern such as *.xlf, *.json ...>')
     .option('-o --output <output>', 'Output file name')
     .addOption(new program.Option('-c --convert <format>', 'Converts all input files in place').choices(['xlf', 'json', 'arb']))
     .option('-q --quiet', 'Quiet mode. Doesn\'t show warnings and info messages.')
+    .option('-ac --allow-conflicts', 'Does not fail if the same key is present multiple times with different content')
     .addHelpText('after', '\nEither --output or --convert option is required')
     .parse(process.argv);
 
@@ -144,11 +149,11 @@ if (options.quiet) {
 
 try {
     if (options.convert) {
-        convertTranslationFiles(program.args, options.convert);
+        convertTranslationFiles(program.args, options.convert, options.allowConflicts);
     }
 
     if (options.output) {
-        mergeTranslationFiles(program.args, options.output);
+        mergeTranslationFiles(program.args, options.output, options.allowConflicts);
     }
 } catch (err) {
     logger.error('xlf-merge failed\n' + err.toString());
